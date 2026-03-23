@@ -1,56 +1,76 @@
-# Welcome to your Expo app 👋
+# Crux
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Base mobile app with Expo + Expo Router, Firebase, NativeWind, Zustand persistence, React Hook Form, and Firebase Functions as the server-side AI + R2 layer.
 
-## Get started
+## Stack prepared
 
-1. Install dependencies
+- Expo Router for app routing (`src/app`)
+- NativeWind + Tailwind for reusable UI primitives
+- Zustand + AsyncStorage for persisted session/cache state
+- Firebase client SDK for Auth, Firestore, and callable Functions
+- Firebase Functions (TypeScript) for OpenAI processing
+- Cloudflare R2 private signed upload/read flow from Functions
 
-   ```bash
-   npm install
-   ```
+## Prerequisites
 
-2. Start the app
+- Bun (recommended in this repo)
+- Firebase CLI (`npm i -g firebase-tools`)
 
-   ```bash
-   npx expo start
-   ```
+## Local setup
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+1. Install app dependencies
 
 ```bash
-npm run reset-project
+bun install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Create app env file
 
-### Other setup steps
+```bash
+cp .env.example .env
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+3. Install Functions dependencies
 
-## Learn more
+```bash
+npm run functions:install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+4. Create Functions env file
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+cp functions/.env.example functions/.env
+```
 
-## Join the community
+5. Set Firebase project
 
-Join our community of developers creating universal apps.
+- Update `.firebaserc` with your Firebase project id.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Run
+
+### Expo app
+
+```bash
+bun run start
+```
+
+### Functions (local emulator)
+
+```bash
+cd functions && npm run build
+firebase emulators:start
+```
+
+## Useful scripts
+
+- `bun run typecheck`: TypeScript check in app
+- `bun run lint`: Expo lint
+- `bun run functions:build`: Build Firebase Functions
+
+## Project structure (new base)
+
+- `src/lib/firebase/*`: Firebase app/auth/firestore/functions clients
+- `src/stores/*`: Zustand persisted stores
+- `src/lib/r2/upload.ts`: callable + signed upload/read client helpers
+- `src/components/forms/*`: reusable React Hook Form components
+- `functions/src/index.ts`: event AI pipeline + R2 signed URL callables
