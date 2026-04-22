@@ -8,6 +8,9 @@ type ControlledTextInputProps<T extends FieldValues> = {
   label: string;
   placeholder?: string;
   multiline?: boolean;
+  secureTextEntry?: boolean;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
 };
 
 export function ControlledTextInput<T extends FieldValues>({
@@ -16,6 +19,9 @@ export function ControlledTextInput<T extends FieldValues>({
   label,
   placeholder,
   multiline = false,
+  secureTextEntry = false,
+  autoCapitalize,
+  keyboardType,
 }: ControlledTextInputProps<T>) {
   return (
     <Controller
@@ -31,6 +37,9 @@ export function ControlledTextInput<T extends FieldValues>({
             onChangeText={onChange}
             value={String(value ?? '')}
             multiline={multiline}
+            secureTextEntry={secureTextEntry}
+            autoCapitalize={autoCapitalize}
+            keyboardType={keyboardType}
             textAlignVertical={multiline ? 'top' : 'center'}
           />
           {error ? <Text className="text-xs text-red-600">{error.message}</Text> : null}

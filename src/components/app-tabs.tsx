@@ -1,33 +1,51 @@
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
 import React from 'react';
-import { useColorScheme } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 
 export default function AppTabs() {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
-
   return (
-    <NativeTabs
-      backgroundColor={colors.background}
-      indicatorColor={colors.backgroundElement}
-      labelStyle={{ selected: { color: colors.text } }}>
-      <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-    </NativeTabs>
+    <Tabs
+      screenOptions={{
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: '#111827',
+        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarStyle: {
+          height: 70,
+          paddingBottom: Spacing.three,
+          paddingTop: Spacing.two,
+        },
+        headerShown: false,
+      }}>
+      <Tabs.Screen
+        name="index"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="pencil" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="journal"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="book-open-page-variant" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="_profile"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="_settings"
+        options={{
+          href: null,
+        }}
+      />
+    </Tabs>
   );
 }

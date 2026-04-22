@@ -16,10 +16,13 @@ This is an AI-powered journaling system based on event processing.
 # Core Architecture
 
 - Everything is an event stored in Firestore
-- Events are immutable once created
-- AI processes events to extract structured data
+- Events maintain full traceability through status and versioned analysis: `pending` → `processed` with v1, v2, etc.
+- User events include their own analysis results with module version references
+- Modifications accumulate versions instead of overwriting (re-processing adds v2, v3, etc.)
+- AI processes events in a single pass against all user's active modules
 - Clients **do not process LLM responses**
 - Clients listen to Firestore updates with onSnapshot or similar
+- System maintains master and user module copies with independent versioning
 
 ---
 
@@ -31,6 +34,7 @@ This is an AI-powered journaling system based on event processing.
 - Prefer flat data structures
 - Use async/await
 - Avoid `any`
+- Always type everything explicitly: function parameters, return types, variables, and data structures
 
 ---
 

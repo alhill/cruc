@@ -28,7 +28,7 @@ export const useSessionStore = create<SessionState>()(
       clearSession: () => set({ sessionId: null, recentEventIds: [] }),
     }),
     {
-      name: 'crux-session-store',
+      name: 'cruc-session-store',
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

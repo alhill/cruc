@@ -2,74 +2,102 @@
 applyTo: "**/*.ts"
 ---
 
-AI processing follows a multi-step pipeline:
+# AI Processing Pipeline
 
-1. Module detection
-2. Structured data extraction
-3. Optional response generation
+Single-pass LLM analysis with active module filtering.
 
----
+## Pipeline Steps
 
-# Module Detection
-
-- Input: raw user message
-- Output: list of relevant modules
-- Done entirely in Firebase Functions
-- A message can match multiple modules
-- Clients must not perform detection
-- Do NOT assume a single category
-
----
-
-# Structured Extraction
-
-- Input: message + selected modules
-- Output: structured JSON per module
-- Each module extracts independently
-- Namespaced output:
-  {
-    mood: {...},
-    exercise: {...}
-  }
-- Functions must persist results in Firestore
-- Clients update automatically via onSnapshot
+1. User submits message
+2. Fetch user's active modules and their current versions
+3. Send message + all active module definitions to LLM
+4. LLM analyzes message and extracts data for relevant modules only
+5. Store structured data inside user event with module version references
+6. Optionally generate system response if needed
 
 ---
 
 # Modules System
 
-Modules are dynamic and stored in Firestore.
+## Master Modules
 
-Each module has:
-- id
-- description
-- schema
-- version
-- active
+Central definitions stored in Firestore.
+
+Each master module has:
+- `id`: string (unique)
+- `name`: string
+- `description`: string
+- `schema`: schema definition (JSON Schema or similar)
+- `version`: number (incremented on changes)
+- `active`: boolean
+- `prompt_instructions`: string (guidance for LLM)
+
+## User Modules
+
+Copied from master modules when user is created.
 
 Rules:
+- User modules can evolve independently
+- Changes to master modules do not affect existing user copies
+- Each user module tracks its own version history
+- Versioning allows re-processing if needed
 
-- Do not hardcode module logic
-- Design systems to allow adding new modules easily
-- Keep modules loosely coupled
-- Function logic must reference modules and version for consistency
-- Clients should only read module results, not process them
+---
 
+# Data Extraction
+
+## Input
+
+- Raw user message
+- User's active modules (with current versions)
+- Module schemas and prompt instructions
+
+## LLM Responsibility
+
+1. Analyze message against all active modules
+2. Determine which modules are relevant
+3. Extract structured data only for relevant modules
+4. Output namespace per module:
+   ```json
+   {
+     "modules_used": {
+       "mood": { "version": 2 },
+       "exercise": { "version": 1 }
+     },
+     "analysis": {
+       "mood": {...},
+       "exercise": {...}
+     }
+   }
+   ```
+
+## Storage
+
+- Structured data is stored inside the user event as an array, NOT in separate `system_generated` events
+- Each processing pass appends a new entry with an incremented `version` number
+- Never overwrite previous entries → append for full history
+- Latest analysis is always the entry with the highest `version`
+- Always preserve `modules_used` to maintain traceability
+- Status transitions: `pending` → `processing` → `processed`
+- Clients never process LLM outputs locally
 
 ---
 
 # Response Generation
 
-- Only generate responses when needed
+- Only generate `system_generated` responses when system needs to reply to user
 - Base responses on structured data, not only raw text
-- Done in Functions, stored as `system_generated` events
-- Clients receive them automatically via snapshot listeners
+- Link responses to their originating user events via `related_event_id`
+- Clients receive responses automatically via snapshot listeners
 
 ---
 
 # Important Constraints
 
-- Never merge module outputs incorrectly
+- Keep module schemas compact but not minimalist
+- Versioning must be tracked for every module used
 - Never lose raw user input
 - Avoid blocking the user for AI response
-- Always preserve traceability between events
+- Always preserve traceability between events and module versions
+- Do not hardcode module logic
+- Design for easy addition of new modules

@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "crux",
-    "slug": "crux",
+    "name": "cruc",
+    "slug": "cruc",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "crux",
+    "scheme": "cruc",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
     },
     "android": {
-      "package": "dev.alhill.cruxapp",
+      "package": "dev.alhill.crucapp",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

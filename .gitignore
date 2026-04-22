@@ -7,6 +7,8 @@ node_modules/
 .expo/
 dist/
 web-build/
+android/app/*.jks
+android/app/*.keystore
 expo-env.d.ts
 
 # Native

@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Each user has full CRUD access to their own document and subcollections.
+    // No access to other users' documents is allowed.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /{subcollection=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // All other top-level collections: authenticated read-only, no write.
+    match /{collection}/{document=**} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}
